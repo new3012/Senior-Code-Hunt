@@ -9,7 +9,8 @@ export async function GET(){if(!(await isAdmin()))return NextResponse.json({erro
   const [missions]=await pool.query<RowDataPacket[]>("SELECT id,day_number day,unlock_offset unlockOffset,kind,tag,title,task,snippet,answer,help_text help,clue,photo_prompt photoPrompt,choices_json choices FROM hunt_missions ORDER BY day_number");
   const [completions]=await pool.query<RowDataPacket[]>(`SELECT c.id,c.player_id playerId,p.nickname,m.day_number day,m.title,c.method,c.ai_result aiResult,c.evidence_path evidencePath,c.passed_at passedAt FROM hunt_completions c JOIN hunt_players p ON p.id=c.player_id JOIN hunt_missions m ON m.id=c.mission_id ORDER BY c.passed_at DESC`);
   const [submissions]=await pool.query<RowDataPacket[]>(`SELECT s.id,s.player_id playerId,s.mission_id missionId,p.nickname,m.day_number day,m.title,s.evidence_path evidencePath,s.submitted_at submittedAt FROM hunt_submissions s JOIN hunt_players p ON p.id=s.player_id JOIN hunt_missions m ON m.id=s.mission_id WHERE s.status='pending' ORDER BY s.submitted_at`);
-  return NextResponse.json({players,missions,completions,submissions,startDate:(await settings()).startDate});}
+  const [reviews]=await pool.query<RowDataPacket[]>(`SELECT h.id,p.nickname,m.day_number day,m.title,h.action,h.reason,h.reviewed_at reviewedAt FROM hunt_review_history h JOIN hunt_players p ON p.id=h.player_id JOIN hunt_missions m ON m.id=h.mission_id ORDER BY h.reviewed_at DESC LIMIT 100`);
+  return NextResponse.json({players,missions,completions,submissions,reviews,startDate:(await settings()).startDate});}
 
 export async function PATCH(request:Request){if(!(await isAdmin()))return NextResponse.json({error:"unauthorized"},{status:401});await ensureDb();const body=await request.json();
   if(body.startDate){await pool.execute("UPDATE hunt_settings SET start_date=? WHERE id=1",[body.startDate]);return NextResponse.json({ok:true});}

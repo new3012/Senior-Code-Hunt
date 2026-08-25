@@ -12,7 +12,7 @@ export async function POST(request:Request){
   try{
   const player=await playerId(); if(!player)return NextResponse.json({error:"กรุณาเริ่มภารกิจก่อน"},{status:401});
   const form=await request.formData(), missionId=Number(form.get("missionId")), file=form.get("photo");
-  if(!(file instanceof File)||file.size>6*1024*1024||!file.type.startsWith("image/"))return NextResponse.json({error:"กรุณาใช้ไฟล์รูปไม่เกิน 6 MB"},{status:400});
+  if(!(file instanceof File)||file.size>8*1024*1024||!file.type.startsWith("image/"))return NextResponse.json({error:"กรุณาใช้ไฟล์รูปไม่เกิน 8 MB"},{status:400});
   await ensureDb(); const [missions]=await pool.query<RowDataPacket[]>("SELECT * FROM hunt_missions ORDER BY day_number");
   const [done]=await pool.execute<RowDataPacket[]>("SELECT mission_id FROM hunt_completions WHERE player_id=?",[player]);
   const mission=missions.find(m=>m.id===missionId), next=missions.find(m=>!done.some(d=>d.mission_id===m.id));

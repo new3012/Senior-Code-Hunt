@@ -26,6 +26,26 @@ export default function HuntApp(){
  const request=async(url:string,body:unknown)=>{setBusy(true);setError("");const r=await fetch(url,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const data=await r.json();setBusy(false);if(!r.ok){setError(data.error);return false}await load();return true};
  const submitAnswer=async()=>{if(!state?.current)return;const ok=await request("/api/missions/answer",{missionId:state.current.id,answer});if(ok){setNotice("ถอดรหัสสำเร็จ! คำใบ้ถูกบันทึกแล้ว");setAnswer("");setHint(false)}};
  const submitFinal=async()=>{const ok=await request("/api/final",{answer:finalAnswer});if(ok){setFinalAnswer("");setNotice("")}};
+ const preparePhoto=async(file:File)=>{
+  // Keep the request below the common Nginx 1 MB default, especially for iPhone camera photos.
+  try{
+   const bitmap=await createImageBitmap(file);
+   let maxSide=1280,quality=.78,blob:Blob|null=null;
+   for(let attempt=0;attempt<4;attempt++){
+    const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+    const canvas=document.createElement("canvas");
+    canvas.width=Math.max(1,Math.round(bitmap.width*scale)); canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+    const ctx=canvas.getContext("2d"); if(!ctx)throw new Error("canvas");
+    ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+    blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/jpeg",quality));
+    if(blob&&blob.size<850*1024)break;
+    maxSide=Math.round(maxSide*.82); quality=Math.max(.58,quality-.07);
+   }
+   bitmap.close();
+   if(!blob)throw new Error("encode");
+   return new File([blob],"mission-photo.jpg",{type:"image/jpeg",lastModified:Date.now()});
+  }catch{return file}
+ };
  const submitPhoto=async(e:React.FormEvent<HTMLFormElement>)=>{
   e.preventDefault();
   if(!state?.current||busy)return;
@@ -35,7 +55,9 @@ export default function HuntApp(){
   const file=selectedPhoto??(formFile instanceof File&&formFile.size?formFile:null);
   if(!file){setError("กรุณาเลือกรูปหรือถ่ายรูปก่อน");return}
   form.delete("cameraPhoto");
-  form.set("photo",file);
+  const uploadFile=await preparePhoto(file);
+  if(uploadFile.size>8*1024*1024){setError("รูปมีขนาดใหญ่เกินไป กรุณาเลือกรูปอื่นหรือลองถ่ายใหม่");return}
+  form.set("photo",uploadFile);
   form.set("missionId",String(state.current.id));
   setBusy(true);setError("");setNotice("");
   try{
@@ -45,7 +67,11 @@ export default function HuntApp(){
     clearTimeout(timer);
     let data:{error?:string}={};
     try{data=await r.json()}catch{}
-    if(!r.ok){setError(data.error||"ส่งรูปไม่สำเร็จ กรุณาลองใหม่");return}
+    if(!r.ok){
+      if(r.status===413)setError("รูปมีขนาดใหญ่เกินกว่าที่เซิร์ฟเวอร์รับได้ กรุณาลองถ่ายหรือเลือกรูปใหม่");
+      else setError(data.error||`ส่งรูปไม่สำเร็จ (รหัส ${r.status}) กรุณาลองใหม่`);
+      return
+    }
     formEl.reset();
     setPhotoFile(null);
     setNotice("ส่งรูปให้พี่รหัสตรวจแล้ว");
