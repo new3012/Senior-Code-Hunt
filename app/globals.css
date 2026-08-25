@@ -124,8 +124,8 @@ footer{flex-direction:column;gap:8px}
 .photo-source-btn{position:relative;display:grid;place-items:center;min-height:72px;border:1px dashed #778267;background:#0d0f0c;color:#dfe3d7;cursor:pointer;font-weight:700}
 .photo-source-btn:hover{border-color:var(--acid);background:#c7ff4308}
 .photo-source-btn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
-.camera-btn span:before{content:"CAM  ";color:var(--acid);font:10px ui-monospace,monospace}
-.gallery-btn span:before{content:"FILE  ";color:var(--acid);font:10px ui-monospace,monospace}
+
+
 .consent{display:flex;align-items:flex-start;gap:8px;padding:12px 14px;background:#11140f;border-left:2px solid #5d684d;font-size:11px;color:#a9aea4;line-height:1.55;text-align:left}
 .consent input{margin-top:2px;accent-color:var(--acid);flex:none}
 .photo-submit{width:100%;min-height:48px}
@@ -135,4 +135,99 @@ footer{flex-direction:column;gap:8px}
  .admin-player-scroll .admin-grid{grid-auto-columns:78vw}
  .admin-player-scroll .admin-grid article{width:78vw}
  .photo-source-grid{grid-template-columns:1fr}
+}
+
+
+/* ===== Direct mobile camera ===== */
+.photo-source-btn{border:1px dashed #778267;background:#0d0f0c;color:#dfe3d7;cursor:pointer;font:700 13px ui-monospace,monospace}
+button.photo-source-btn{width:100%;padding:0}
+.photo-selected{margin:10px 0 0!important;color:var(--acid)!important;font:11px ui-monospace,monospace!important;text-align:left}
+.camera-modal{position:fixed;inset:0;z-index:9999;background:#000d;display:grid;place-items:center;padding:18px}
+.camera-card{width:min(560px,100%);background:#151813;border:1px solid #444b3d;box-shadow:14px 14px 0 #080a07}
+.camera-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #343a30}
+.camera-head>div{display:flex;flex-direction:column;gap:3px}
+.camera-head span{color:var(--acid);font:10px ui-monospace,monospace;letter-spacing:.14em}
+.camera-head b{font-size:16px}
+.camera-head button{width:38px;height:38px;border:1px solid #4c5345;background:#1c201a;color:#eee;font-size:25px;cursor:pointer}
+.camera-preview{background:#050605;aspect-ratio:3/4;max-height:66vh;display:grid;place-items:center;overflow:hidden}
+.camera-preview video{width:100%;height:100%;object-fit:cover}
+.camera-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;padding:14px}
+.camera-actions button{min-height:48px;border:1px solid #525a49;cursor:pointer;font-weight:700}
+.camera-cancel{background:#171a16;color:#d8dcd3}
+.camera-shot{background:var(--acid);color:#10120f}
+@media(min-width:700px){.camera-preview{aspect-ratio:4/3}}
+
+
+/* ===== Selected photo preview ===== */
+.photo-preview-card{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:14px;
+  align-items:center;
+  padding:12px;
+  border:1px solid #46503d;
+  background:#0d0f0c;
+  text-align:left;
+}
+.photo-preview-card img{
+  width:120px;
+  height:92px;
+  object-fit:cover;
+  border:1px solid #59624d;
+  background:#080908;
+}
+.photo-preview-card>div{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.photo-preview-card b{
+  color:var(--acid);
+  font-size:13px;
+}
+.photo-preview-card span{
+  color:#969c91;
+  font-size:11px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.photo-preview-card button{
+  width:max-content;
+  margin-top:4px!important;
+  padding:8px 10px!important;
+  background:transparent!important;
+  color:#d9ddd4!important;
+  border:1px solid #4f5749!important;
+  box-shadow:none!important;
+}
+@media(max-width:520px){
+  .photo-preview-card{grid-template-columns:96px 1fr}
+  .photo-preview-card img{width:96px;height:82px}
+}
+
+
+/* ===== Mobile input zoom prevention ===== */
+/*
+ * iOS Safari and in-app browsers auto-zoom form controls when their font size
+ * is below 16px. Keep desktop styling unchanged and force 16px on phones.
+ */
+@media (max-width: 700px) {
+  input,
+  textarea,
+  select,
+  .answer-input,
+  .onboard-card input,
+  .admin-login input,
+  .recover-row input,
+  .mission-editor textarea,
+  .admin-shell input[type="date"] {
+    font-size: 16px !important;
+  }
+
+  input[type="file"] {
+    font-size: 16px !important;
+  }
 }
