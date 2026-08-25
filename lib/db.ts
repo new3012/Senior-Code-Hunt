@@ -99,6 +99,17 @@ export async function ensureDb() {
         ]);
         await c.query("UPDATE hunt_settings SET content_version=7 WHERE id=1");
       }
+      const [riddleVersions]=await c.query<RowDataPacket[]>("SELECT content_version FROM hunt_settings WHERE id=1");
+      if(Number(riddleVersions[0]?.content_version??1)<8){
+        await c.execute(`UPDATE hunt_missions SET kind='choice',tag='RIDDLE',title=?,task=?,snippet=NULL,answer=?,help_text=?,choices_json=? WHERE day_number=8`,[
+          "เสียงที่ไม่มีใครพูด",
+          "อะไรเอ่ย ไม่มีปากแต่ตอบกลับได้ ไม่มีหูแต่ได้ยิน และมักเกิดขึ้นเมื่อเราเปล่งเสียงในที่กว้าง?",
+          "เสียงสะท้อน",
+          "มันไม่ได้สร้างคำใหม่ เพียงส่งสิ่งที่ได้ยินกลับมา",
+          JSON.stringify(["สายลม","เงา","เสียงสะท้อน","ความคิด","ความเงียบ"])
+        ]);
+        await c.query("UPDATE hunt_settings SET content_version=8 WHERE id=1");
+      }
 
     } finally { c.release(); }
   })();

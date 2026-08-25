@@ -64,6 +64,12 @@ export async function PATCH(request:Request){
     await pool.execute(`UPDATE hunt_missions SET ${key}=? WHERE id=?`,[value===""?null:value,Number(body.missionId)]);
    }
   }
+  if(Object.prototype.hasOwnProperty.call(body.fields,"choices_json")){
+    const choices=Array.isArray(body.fields.choices_json)?body.fields.choices_json.map((v:unknown)=>String(v).trim()).filter(Boolean):[];
+    if(choices.length<2||choices.length>12)return NextResponse.json({error:"ภารกิจแบบตัวเลือกต้องมี 2-12 ตัวเลือก"},{status:400});
+    if(choices.some((v:string)=>v.length>160))return NextResponse.json({error:"แต่ละตัวเลือกยาวได้สูงสุด 160 ตัวอักษร"},{status:400});
+    await pool.execute("UPDATE hunt_missions SET choices_json=? WHERE id=?",[JSON.stringify(choices),Number(body.missionId)]);
+  }
   return NextResponse.json({ok:true});
  }
 

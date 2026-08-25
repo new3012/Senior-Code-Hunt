@@ -708,3 +708,15 @@ button.photo-source-btn{width:100%;padding:0}
 .final-settings-form{padding:12px 16px 16px}
 .final-settings-form label{display:block;margin-bottom:10px}
 .final-settings-form input{display:block;width:100%;margin-top:5px;padding:10px;background:#0c0e0b;border:1px solid #373b33;color:#e4e6df}
+
+.mission-edit-form label small{display:block;margin-top:3px;color:#81877d;font-size:10px;font-weight:400}
+.choice-grid .is-preview-selected{outline:2px solid var(--acid);outline-offset:2px}
+.preview-check-btn{margin-top:12px}
+.preview-result{margin:9px 0 0;padding:9px 11px;border:1px solid #555;font:11px ui-monospace,monospace}
+.preview-result.correct{border-color:#627a49;color:var(--acid);background:#c7ff4308}
+.preview-result.wrong{border-color:#7d4b45;color:#ff9688;background:#ff544408}
+.preview-answer-btn{width:100%;margin-top:10px;padding:11px 12px;border:1px solid #6b7658;background:#151914;color:var(--acid);font-weight:700;cursor:pointer}
+.preview-answer-box{margin-top:10px;padding:14px;border:1px solid #687557;background:#c7ff4308;display:flex;flex-direction:column;gap:5px}
+.preview-answer-box span{color:var(--acid);font:10px ui-monospace,monospace;letter-spacing:.12em}
+.preview-answer-box b{color:#eef1e9;font-size:18px}
+.preview-answer-box small{color:#979e91;line-height:1.5}
