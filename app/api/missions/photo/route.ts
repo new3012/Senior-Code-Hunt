@@ -17,7 +17,7 @@ export async function POST(request:Request){
   const mission=missions.find(m=>m.id===missionId), next=missions.find(m=>!done.some(d=>d.mission_id===m.id));
   if(!mission||mission.kind!=="photo"||next?.id!==mission.id||Number(mission.unlock_offset)>elapsedBangkokDays((await settings()).startDate))return NextResponse.json({error:"ยังไม่ถึงภารกิจนี้"},{status:409});
   const [existing]=await pool.execute<RowDataPacket[]>("SELECT id,evidence_path,status FROM hunt_submissions WHERE player_id=? AND mission_id=?",[player,mission.id]);
-  if(existing[0]?.status==="pending")return NextResponse.json({error:"รูปนี้กำลังรอนิวตรวจอยู่"},{status:409});
+  if(existing[0]?.status==="pending")return NextResponse.json({error:"รูปนี้กำลังรอผู้ดูแลตรวจอยู่"},{status:409});
   const processed=await sharp(Buffer.from(await file.arrayBuffer())).rotate().resize({width:1280,height:1280,fit:"inside",withoutEnlargement:true}).jpeg({quality:82}).toBuffer();
   const dir=process.env.PRIVATE_UPLOAD_DIR??"/home/discordbot/private/senior-code-hunt"; await mkdir(dir,{recursive:true});
   if(existing[0]?.evidence_path)await unlink(path.join(dir,path.basename(existing[0].evidence_path))).catch(()=>{});

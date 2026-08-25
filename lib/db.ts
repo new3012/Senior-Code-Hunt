@@ -59,6 +59,13 @@ export async function ensureDb() {
         await c.execute(`UPDATE hunt_missions SET kind='photo',title=?,task=?,snippet=NULL,answer=NULL,help_text=?,photo_prompt=? WHERE day_number=9`,["ทีมสืบสวนตัว น","ขออนุญาตเพื่อนแล้วถ่ายรูปรวม 3 คน โดยแต่ละคนถือของที่ชื่อขึ้นต้นด้วย น คนละ 1 ชิ้น","ตัวอย่างเช่น น้ำ หนังสือ นาฬิกา ต้องเห็นทั้งสามคนและของครบสามชิ้น","Manual review: three consenting people, each holding a different object whose Thai name begins with น."]);
         await c.query("UPDATE hunt_settings SET content_version=5 WHERE id=1");
       }
+
+      const [nameSafeVersions]=await c.query<RowDataPacket[]>("SELECT content_version FROM hunt_settings WHERE id=1");
+      if(Number(nameSafeVersions[0]?.content_version??1)<6){
+        await c.execute(`UPDATE hunt_missions SET kind='choice',tag='LOGIC',title=?,task=?,snippet=NULL,answer=?,help_text=?,clue=?,photo_prompt=NULL,choices_json=? WHERE day_number=8`,["ทิศทางตรงข้าม","คำตรงข้ามของ UP คือข้อใด?","DOWN","ถ้าไม่ขึ้น ก็ต้องลง","พี่ใช้โทรศัพท์ iPhone",JSON.stringify(["LEFT","DOWN","RIGHT"])]);
+        await c.execute(`UPDATE hunt_missions SET kind='photo',tag='TEAM',title=?,task=?,snippet=NULL,answer=NULL,help_text=?,clue=?,photo_prompt=?,choices_json=? WHERE day_number=9`,["ทีมสืบสวนสามคน","ขออนุญาตเพื่อนแล้วถ่ายรูปรวม 3 คน พร้อมชูเลข 1, 2 และ 3 คนละหนึ่งเลข","ต้องเห็นทั้งสามคนและเลข 1, 2, 3 ชัดเจนในภาพเดียว","พี่เรียนสายคอมพิวเตอร์","Manual review: three consenting people together, clearly showing the numbers 1, 2, and 3.",JSON.stringify([])]);
+        await c.query("UPDATE hunt_settings SET content_version=6 WHERE id=1");
+      }
     } finally { c.release(); }
   })();
   return global.seniorHuntReady;

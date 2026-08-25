@@ -10,7 +10,7 @@ sudo mysql < database/schema.sql
 ## 2. สร้างรหัสผ่านหลังบ้านแบบ Hash
 ```bash
 npm ci
-node scripts/hash-password.mjs "รหัสผ่านของนิว"
+node scripts/hash-password.mjs "รหัสผ่านผู้ดูแล"
 ```
 
 ## 3. สร้าง `.env.production` บน VPS
@@ -39,4 +39,4 @@ pm2 save
 - เว็บผู้เล่น: `https://seniorhunt.nexspacehub.com`
 - หลังบ้าน: `https://seniorhunt.nexspacehub.com/admin`
 - รูปไม่ผ่านจะไม่ถูกเก็บ รูปผ่านเก็บ private และลบเมื่อเกิน 7 วันในครั้งถัดไปที่เปิดหลังบ้าน
-- รูปจะรอให้นิวตรวจในหน้า `/admin` เมื่อกดผ่านจึงปลดล็อกคำใบ้
+- รูปจะรอให้ผู้ดูแลตรวจในหน้า `/admin` เมื่อกดผ่านจึงปลดล็อกคำใบ้
