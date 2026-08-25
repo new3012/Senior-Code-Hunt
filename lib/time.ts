@@ -23,10 +23,11 @@ export function elapsedBangkokDays(startDate:string,now=new Date()){
   return Math.max(0,Math.floor((today-start)/86400000));
 }
 
-export function sundayBonusStatus(startDate:string,now=new Date()){
+export function sundayBonusStatus(startDate:string,unlockTime="18:00",now=new Date()){
   const start=Date.parse(`${startDate}T00:00:00Z`);
   const bonusDate=new Date(start+5*86400000).toISOString().slice(0,10);
-  const unlockAt=Date.parse(`${bonusDate}T18:00:00+07:00`);
+  const safeTime=/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(unlockTime)?unlockTime:"18:00";
+  const unlockAt=Date.parse(`${bonusDate}T${safeTime}:00+07:00`);
   return {unlocked:now.getTime()>=unlockAt,unlockAt,remainingMs:Math.max(0,unlockAt-now.getTime())};
 }
 

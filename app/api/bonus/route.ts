@@ -13,7 +13,8 @@ async function requireBonusPlayer(){
  const id=await playerId();
  if(!id)return {error:NextResponse.json({error:"กรุณาเริ่มภารกิจก่อน"},{status:401})};
  await ensureDb();
- if(!sundayBonusStatus((await settings()).startDate).unlocked)return {error:NextResponse.json({error:"ภารกิจลับยังไม่เปิด"},{status:409})};
+ const appSettings=await settings();
+ if(!sundayBonusStatus(appSettings.startDate,appSettings.bonusUnlockTime).unlocked)return {error:NextResponse.json({error:"ภารกิจลับยังไม่เปิด"},{status:409})};
  return {id};
 }
 export async function POST(request:Request){
@@ -44,14 +45,15 @@ export async function POST(request:Request){
    token={playerId:id,secret:makeSecret(),attempts:0};
   }
   const secret=String(token.secret),result=feedback(String(body.guess),secret),attempts=Number(token.attempts??0)+1;
+  const maxAttempts=Math.max(1,Math.min(20,Number((await settings()).bonusCodeAttempts||5)));
   if(result.every(v=>v==="exact")){
    await pool.execute("UPDATE hunt_bonus_progress SET code_done=TRUE WHERE player_id=?",[id]);
    jar.delete(BONUS_COOKIE);
    return NextResponse.json({ok:true,complete:true,feedback:result,remaining:0});
   }
-  if(attempts>=10){jar.set(BONUS_COOKIE,makeToken({playerId:id,secret:makeSecret(),attempts:0}),{...cookieOptions,maxAge:60*60*6});return NextResponse.json({ok:true,complete:false,feedback:result,remaining:10,reset:true})}
+  if(attempts>=maxAttempts){jar.set(BONUS_COOKIE,makeToken({playerId:id,secret:makeSecret(),attempts:0}),{...cookieOptions,maxAge:60*60*6});return NextResponse.json({ok:true,complete:false,feedback:result,remaining:maxAttempts,reset:true})}
   jar.set(BONUS_COOKIE,makeToken({playerId:id,secret,attempts}),{...cookieOptions,maxAge:60*60*6});
-  return NextResponse.json({ok:true,complete:false,feedback:result,remaining:10-attempts,reset:false});
+  return NextResponse.json({ok:true,complete:false,feedback:result,remaining:maxAttempts-attempts,reset:false});
  }
  return NextResponse.json({error:"ไม่พบด่าน"},{status:400});
 }

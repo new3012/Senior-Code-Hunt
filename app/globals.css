@@ -636,3 +636,75 @@ button.photo-source-btn{width:100%;padding:0}
   .special-lock{margin:auto}
   .special-mission-heading{align-items:flex-start}
 }
+
+
+/* ===== Admin explicit-save mission editor ===== */
+.mission-edit-form{padding:4px 0 16px}
+.mission-editor summary em{
+  display:inline-block;
+  margin-left:8px;
+  padding:3px 6px;
+  color:#ff8b7e;
+  border:1px solid #78463f;
+  font:9px ui-monospace,monospace;
+  font-style:normal;
+}
+.mission-editor .mission-locked{
+  opacity:.7;
+  border-color:#4d3733;
+}
+.mission-editor .mission-locked textarea,
+.mission-editor .mission-locked input{
+  cursor:not-allowed;
+  color:#777d73;
+  background:#111310;
+}
+.mission-edit-form input{
+  display:block;
+  width:100%;
+  margin-top:5px;
+  padding:10px;
+  background:#0c0e0b;
+  border:1px solid #373b33;
+  color:#e4e6df;
+}
+.special-settings-form{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 14px;
+  padding:12px 16px 16px;
+}
+.special-settings-form label{padding:0}
+.special-settings-form label:last-of-type,
+.special-settings-form .special-admin-note,
+.special-settings-form .save-mission-btn{grid-column:1/-1}
+.save-mission-btn{
+  width:calc(100% - 32px);
+  margin:12px 16px 0;
+  padding:12px 14px;
+  border:1px solid #657451;
+  background:var(--acid);
+  color:#10120f;
+  font-weight:800;
+  cursor:pointer;
+}
+.special-settings-form .save-mission-btn{width:100%;margin:4px 0 0}
+.save-mission-btn:disabled{
+  background:#22251f;
+  color:#767b71;
+  border-color:#42463e;
+  cursor:not-allowed;
+}
+.admin-save-error{margin-top:12px}
+@media(max-width:700px){
+  .special-settings-form{grid-template-columns:1fr}
+  .special-settings-form label:last-of-type,
+  .special-settings-form .special-admin-note,
+  .special-settings-form .save-mission-btn{grid-column:auto}
+}
+
+.final-mission-admin{border-color:#6b6645!important;background:linear-gradient(135deg,#c7ff4305,transparent 50%)}
+.final-mission-admin summary b{color:#f3d56c!important}
+.final-settings-form{padding:12px 16px 16px}
+.final-settings-form label{display:block;margin-bottom:10px}
+.final-settings-form input{display:block;width:100%;margin-top:5px;padding:10px;background:#0c0e0b;border:1px solid #373b33;color:#e4e6df}

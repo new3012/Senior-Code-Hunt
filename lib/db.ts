@@ -29,10 +29,28 @@ export async function ensureDb() {
   if (!global.seniorHuntReady) global.seniorHuntReady = (async () => {
     const c = await pool.getConnection();
     try {
-      await c.query(`CREATE TABLE IF NOT EXISTS hunt_settings (id TINYINT PRIMARY KEY DEFAULT 1, start_date DATE NOT NULL, content_version INT NOT NULL DEFAULT 1, bonus_clue TEXT NULL, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)`);
+      await c.query(`CREATE TABLE IF NOT EXISTS hunt_settings (id TINYINT PRIMARY KEY DEFAULT 1, start_date DATE NOT NULL, content_version INT NOT NULL DEFAULT 1, bonus_clue TEXT NULL, bonus_title VARCHAR(160) NULL, bonus_unlock_time VARCHAR(5) NULL, bonus_sequence_rounds INT NULL, bonus_code_attempts INT NULL, final_title VARCHAR(160) NULL, final_task TEXT NULL, final_answer VARCHAR(160) NULL, final_help TEXT NULL, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)`);
       const [bonusClueColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='bonus_clue'");
       if(!bonusClueColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN bonus_clue TEXT NULL AFTER content_version");
       await c.execute("UPDATE hunt_settings SET bonus_clue=? WHERE id=1 AND (bonus_clue IS NULL OR TRIM(bonus_clue)='')",["พี่รหัสมักอยู่ใกล้พื้นที่ที่มีคอมพิวเตอร์"]);
+      const [bonusTitleColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='bonus_title'");
+      if(!bonusTitleColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN bonus_title VARCHAR(160) NULL AFTER bonus_clue");
+      const [bonusTimeColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='bonus_unlock_time'");
+      if(!bonusTimeColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN bonus_unlock_time VARCHAR(5) NULL AFTER bonus_title");
+      const [bonusRoundsColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='bonus_sequence_rounds'");
+      if(!bonusRoundsColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN bonus_sequence_rounds INT NULL AFTER bonus_unlock_time");
+      const [bonusAttemptsColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='bonus_code_attempts'");
+      if(!bonusAttemptsColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN bonus_code_attempts INT NULL AFTER bonus_sequence_rounds");
+      await c.execute("UPDATE hunt_settings SET bonus_title=COALESCE(NULLIF(TRIM(bonus_title),''),'ภารกิจพิเศษ'),bonus_unlock_time=COALESCE(NULLIF(TRIM(bonus_unlock_time),''),'18:00'),bonus_sequence_rounds=COALESCE(bonus_sequence_rounds,8),bonus_code_attempts=COALESCE(bonus_code_attempts,5) WHERE id=1");
+      const [finalTitleColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='final_title'");
+      if(!finalTitleColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN final_title VARCHAR(160) NULL AFTER bonus_code_attempts");
+      const [finalTaskColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='final_task'");
+      if(!finalTaskColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN final_task TEXT NULL AFTER final_title");
+      const [finalAnswerColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='final_answer'");
+      if(!finalAnswerColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN final_answer VARCHAR(160) NULL AFTER final_task");
+      const [finalHelpColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='final_help'");
+      if(!finalHelpColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN final_help TEXT NULL AFTER final_answer");
+      await c.execute("UPDATE hunt_settings SET final_title=COALESCE(NULLIF(TRIM(final_title),''),'สิ่งที่ติดตามตัวคุณ'),final_task=COALESCE(NULLIF(TRIM(final_task),''),'อะไรเอ่ย ตามเราไปทุกที่ แต่จะหายไปเมื่อไม่มีแสง?'),final_answer=COALESCE(NULLIF(TRIM(final_answer),''),'เงา'),final_help=COALESCE(NULLIF(TRIM(final_help),''),'ลองคิดถึงสิ่งที่เกิดขึ้นเมื่อมีแสง และเคลื่อนที่ตามตัวเรา') WHERE id=1");
       await c.query(`CREATE TABLE IF NOT EXISTS hunt_missions (id INT AUTO_INCREMENT PRIMARY KEY, day_number INT NOT NULL UNIQUE, unlock_offset INT NOT NULL DEFAULT 0, kind ENUM('code','choice','photo') NOT NULL, tag VARCHAR(32) NOT NULL, title VARCHAR(160) NOT NULL, task TEXT NOT NULL, snippet TEXT NULL, answer VARCHAR(160) NULL, help_text TEXT NULL, clue TEXT NOT NULL, photo_prompt TEXT NULL, choices_json JSON NULL, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)`);
       await c.query(`CREATE TABLE IF NOT EXISTS hunt_players (id CHAR(36) PRIMARY KEY, nickname VARCHAR(40) NOT NULL, recovery_code VARCHAR(20) NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
       await c.query(`CREATE TABLE IF NOT EXISTS hunt_completions (id BIGINT AUTO_INCREMENT PRIMARY KEY, player_id CHAR(36) NOT NULL, mission_id INT NOT NULL, method ENUM('answer','manual_photo','ai_photo') NOT NULL, evidence_path VARCHAR(500) NULL, ai_result JSON NULL, passed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE KEY uniq_player_mission(player_id,mission_id), CONSTRAINT fk_completion_player FOREIGN KEY(player_id) REFERENCES hunt_players(id) ON DELETE CASCADE, CONSTRAINT fk_completion_mission FOREIGN KEY(mission_id) REFERENCES hunt_missions(id) ON DELETE CASCADE)`);
@@ -89,6 +107,6 @@ export async function ensureDb() {
 
 export async function settings() {
   await ensureDb();
-  const [rows] = await pool.query<RowDataPacket[]>("SELECT DATE_FORMAT(start_date,'%Y-%m-%d') startDate,bonus_clue bonusClue FROM hunt_settings WHERE id=1");
-  return rows[0] as { startDate: string; bonusClue: string };
+  const [rows] = await pool.query<RowDataPacket[]>("SELECT DATE_FORMAT(start_date,'%Y-%m-%d') startDate,bonus_clue bonusClue,bonus_title bonusTitle,bonus_unlock_time bonusUnlockTime,bonus_sequence_rounds bonusSequenceRounds,bonus_code_attempts bonusCodeAttempts,final_title finalTitle,final_task finalTask,final_answer finalAnswer,final_help finalHelp FROM hunt_settings WHERE id=1");
+  return rows[0] as { startDate: string; bonusClue: string; bonusTitle: string; bonusUnlockTime: string; bonusSequenceRounds: number; bonusCodeAttempts: number; finalTitle: string; finalTask: string; finalAnswer: string; finalHelp: string };
 }
