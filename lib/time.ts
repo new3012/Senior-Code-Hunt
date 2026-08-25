@@ -17,6 +17,19 @@ export function releasedByOffsets(startDate:string, offsets:number[], now=new Da
   return offsets.filter(offset=>offset<=elapsed).length;
 }
 
+export function elapsedBangkokDays(startDate:string,now=new Date()){
+  const today=Date.parse(`${bangkokDate(now)}T00:00:00Z`);
+  const start=Date.parse(`${startDate}T00:00:00Z`);
+  return Math.max(0,Math.floor((today-start)/86400000));
+}
+
+export function sundayBonusStatus(startDate:string,now=new Date()){
+  const start=Date.parse(`${startDate}T00:00:00Z`);
+  const bonusDate=new Date(start+5*86400000).toISOString().slice(0,10);
+  const unlockAt=Date.parse(`${bonusDate}T18:00:00+07:00`);
+  return {unlocked:now.getTime()>=unlockAt,unlockAt,remainingMs:Math.max(0,unlockAt-now.getTime())};
+}
+
 export function millisecondsToBangkokMidnight(now = new Date()) {
   const local = new Date(now.toLocaleString("en-US", { timeZone: TIME_ZONE }));
   const next = new Date(local);

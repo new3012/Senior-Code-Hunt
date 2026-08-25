@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./mini-games.css";
 
 export const metadata: Metadata = {
   title: "ภารกิจตามหาพี่รหัส",
