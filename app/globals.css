@@ -16,6 +16,7 @@ button{font:inherit}
 h1{font-size:clamp(48px,6vw,82px);line-height:.94;letter-spacing:-.065em;margin:18px 0 28px}
 h1 em{color:transparent;-webkit-text-stroke:1px var(--acid);font-style:normal}
 .intro{color:#a9aca3;max-width:510px;font-size:16px;line-height:1.8}
+.deadline-note{display:inline-block;margin-top:12px;border:1px solid #566044;color:var(--acid);padding:8px 11px;font:10px ui-monospace,monospace;letter-spacing:.08em}
 .case-stats{display:flex;gap:34px;margin-top:42px}
 .case-stats div{border-left:1px solid #41443c;padding-left:15px;display:flex;flex-direction:column}
 .case-stats strong{font:26px ui-monospace,monospace;color:var(--acid)}

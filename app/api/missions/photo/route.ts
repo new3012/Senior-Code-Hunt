@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import sharp from "sharp";
 import { ensureDb, pool, settings } from "@/lib/db";
 import { playerId } from "@/lib/session";
-import { releasedDay } from "@/lib/time";
+import { releasedByOffsets } from "@/lib/time";
 
 export const runtime="nodejs";
 export async function POST(request:Request){
@@ -15,7 +15,7 @@ export async function POST(request:Request){
   await ensureDb(); const [missions]=await pool.query<RowDataPacket[]>("SELECT * FROM hunt_missions ORDER BY day_number");
   const [done]=await pool.execute<RowDataPacket[]>("SELECT mission_id FROM hunt_completions WHERE player_id=?",[player]);
   const mission=missions.find(m=>m.id===missionId), next=missions.find(m=>!done.some(d=>d.mission_id===m.id));
-  if(!mission||mission.kind!=="photo"||next?.id!==mission.id||mission.day_number>releasedDay((await settings()).startDate,missions.length))return NextResponse.json({error:"ยังไม่ถึงภารกิจนี้"},{status:409});
+  if(!mission||mission.kind!=="photo"||next?.id!==mission.id||mission.day_number>releasedByOffsets((await settings()).startDate,missions.map(m=>Number(m.unlock_offset))))return NextResponse.json({error:"ยังไม่ถึงภารกิจนี้"},{status:409});
   const [existing]=await pool.execute<RowDataPacket[]>("SELECT id,evidence_path,status FROM hunt_submissions WHERE player_id=? AND mission_id=?",[player,mission.id]);
   if(existing[0]?.status==="pending")return NextResponse.json({error:"รูปนี้กำลังรอนิวตรวจอยู่"},{status:409});
   const processed=await sharp(Buffer.from(await file.arrayBuffer())).rotate().resize({width:1280,height:1280,fit:"inside",withoutEnlargement:true}).jpeg({quality:82}).toBuffer();

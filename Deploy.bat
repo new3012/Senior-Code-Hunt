@@ -15,6 +15,7 @@ if errorlevel 1 (
 
 git status --short
 git add -A
+
 git diff --cached --quiet
 if errorlevel 1 (
   git commit -m "Update Senior Code Hunt"

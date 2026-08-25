@@ -10,6 +10,13 @@ export function releasedDay(startDate: string, total: number, now = new Date()) 
   return Math.max(0, Math.min(total, Math.floor((today - start) / 86400000) + 1));
 }
 
+export function releasedByOffsets(startDate:string, offsets:number[], now=new Date()){
+  const today=Date.parse(`${bangkokDate(now)}T00:00:00Z`);
+  const start=Date.parse(`${startDate}T00:00:00Z`);
+  const elapsed=Math.max(0,Math.floor((today-start)/86400000));
+  return offsets.filter(offset=>offset<=elapsed).length;
+}
+
 export function millisecondsToBangkokMidnight(now = new Date()) {
   const local = new Date(now.toLocaleString("en-US", { timeZone: TIME_ZONE }));
   const next = new Date(local);
