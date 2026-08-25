@@ -231,3 +231,223 @@ button.photo-source-btn{width:100%;padding:0}
     font-size: 16px !important;
   }
 }
+
+
+/* ===== Native mobile capture + cleaner upload UI ===== */
+.photo-upload-card{
+  border:1px solid #40483a;
+  background:linear-gradient(145deg,#171b15,#10130f);
+  padding:18px;
+  box-shadow:7px 7px 0 #090b08;
+}
+.photo-source-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.photo-source-btn{
+  position:relative;
+  min-height:64px;
+  display:grid;
+  place-items:center;
+  border:1px solid #59644f;
+  background:#0e110d;
+  color:#e8ebe3;
+  cursor:pointer;
+  font-weight:700;
+  overflow:hidden;
+  transition:.18s ease;
+}
+.photo-source-btn:hover{border-color:var(--acid);background:#c7ff4308}
+.photo-source-btn span{position:relative;z-index:1;pointer-events:none}
+.photo-source-btn input{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  cursor:pointer;
+}
+.camera-btn{background:var(--acid);color:#10120f;border-color:var(--acid)}
+.camera-btn:hover{background:#d0ff61}
+.photo-preview-card{
+  margin-top:14px;
+  grid-template-columns:112px 1fr;
+  border-color:#536048;
+  background:#0c0f0b;
+}
+.photo-preview-card img{
+  width:112px;
+  height:90px;
+  border-radius:3px;
+}
+.photo-preview-card b{color:var(--acid)}
+@media(max-width:560px){
+  .photo-source-grid{grid-template-columns:1fr 1fr}
+  .photo-source-btn{min-height:58px}
+  .photo-preview-card{grid-template-columns:88px 1fr}
+  .photo-preview-card img{width:88px;height:76px}
+}
+
+/* ===== Admin evidence thumbnails + lightbox ===== */
+.evidence-grid{
+  grid-template-columns:repeat(auto-fill,minmax(210px,260px));
+  align-items:start;
+}
+.evidence-grid article{
+  background:#131611;
+}
+.evidence-thumb-button{
+  position:relative;
+  display:block;
+  width:100%;
+  padding:0;
+  border:1px solid #454d40;
+  background:#0b0d0a;
+  cursor:zoom-in;
+  overflow:hidden;
+}
+.evidence-thumb-button img{
+  width:100%;
+  height:150px;
+  aspect-ratio:auto;
+  object-fit:cover;
+  display:block;
+  transition:transform .18s ease,opacity .18s ease;
+}
+.evidence-thumb-button span{
+  position:absolute;
+  right:8px;
+  bottom:8px;
+  padding:5px 7px;
+  background:#070906d9;
+  border:1px solid #515b49;
+  color:#dce1d7!important;
+  font:10px ui-monospace,monospace!important;
+}
+.evidence-thumb-button:hover img{transform:scale(1.025);opacity:.9}
+.evidence-lightbox{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:#000d;
+  backdrop-filter:blur(6px);
+}
+.evidence-lightbox-card{
+  width:min(960px,96vw);
+  max-height:92vh;
+  display:flex;
+  flex-direction:column;
+  background:#121510;
+  border:1px solid #4b5445;
+  box-shadow:16px 16px 0 #070806;
+}
+.evidence-lightbox-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 14px;
+  border-bottom:1px solid #343a31;
+}
+.evidence-lightbox-head b{color:#eef1e9}
+.evidence-lightbox-head button{
+  width:38px;
+  height:38px;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid #50584b!important;
+  color:#fff!important;
+  background:#1b1f19!important;
+  font-size:24px;
+}
+.evidence-lightbox-card>img{
+  width:100%;
+  max-height:75vh;
+  object-fit:contain;
+  background:#060706;
+}
+.evidence-lightbox-card>p{
+  margin:0;
+  padding:10px 14px;
+  color:#777e72;
+  font-size:11px;
+}
+
+
+/* ===== Rejected photo feedback ===== */
+.photo-rejected{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:12px;
+  margin:14px 0;
+  padding:14px;
+  border:1px solid #7e3c35;
+  border-left:4px solid #ff6b5f;
+  background:linear-gradient(135deg,#241411,#15110f);
+  text-align:left;
+}
+.photo-rejected>span{
+  align-self:start;
+  padding:5px 8px;
+  border:1px solid #a7483f;
+  color:#ff796e;
+  font:700 10px ui-monospace,monospace;
+}
+.photo-rejected div{display:flex;flex-direction:column;gap:4px}
+.photo-rejected b{color:#ff8d84;font-size:13px}
+.photo-rejected p{margin:0!important;color:#f0e5df!important;font-size:13px!important;line-height:1.55}
+.photo-rejected small{color:#9d938f;line-height:1.5}
+
+/* ===== Admin rejection reason modal ===== */
+.reject-modal{
+  position:fixed;
+  inset:0;
+  z-index:10020;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:#000d;
+  backdrop-filter:blur(6px);
+}
+.reject-card{
+  width:min(560px,96vw);
+  padding:18px;
+  background:#151713;
+  border:1px solid #59433d;
+  box-shadow:14px 14px 0 #080908;
+}
+.reject-head{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:16px}
+.reject-head>div{display:flex;flex-direction:column;gap:3px}
+.reject-head span{color:#ff796e;font:10px ui-monospace,monospace;letter-spacing:.12em}
+.reject-head b{font-size:20px}
+.reject-head small{color:#8c9188}
+.reject-head>button{
+  width:40px;height:40px;padding:0!important;margin:0!important;
+  background:#1b1d19!important;color:#eee!important;border:1px solid #4a4f46!important;
+  font-size:24px;box-shadow:none!important
+}
+.reject-card label{display:flex;flex-direction:column;gap:8px;font-weight:700}
+.reject-card textarea{
+  min-height:130px;
+  resize:vertical;
+  padding:12px;
+  color:#f1f3ed;
+  background:#0d0f0c;
+  border:1px solid #50564c;
+  font:14px/1.6 ui-monospace,monospace;
+}
+.reject-card textarea:focus{outline:1px solid #ff796e;border-color:#ff796e}
+.reject-count{text-align:right;color:#767c72;font:10px ui-monospace,monospace;margin:5px 0 12px}
+.reject-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.reject-actions button{min-height:46px}
+.reject-confirm{background:#7e302a!important;color:#fff!important;border-color:#b84a40!important}
+.review-actions .reject-button{border-color:#80433d;color:#ff7b70}
+
+/* Small evidence cards remain compact; click opens full image. */
+.evidence-grid{grid-template-columns:repeat(auto-fill,minmax(190px,230px))!important}
+.evidence-thumb-button img{height:128px!important}
+
+@media(max-width:600px){
+  .reject-actions{grid-template-columns:1fr}
+  .reject-card textarea{font-size:16px}
+}

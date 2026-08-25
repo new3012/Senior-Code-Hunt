@@ -23,7 +23,7 @@ export async function POST(request:Request){
   const dir=process.env.PRIVATE_UPLOAD_DIR??"/home/discordbot/private/senior-code-hunt"; await mkdir(dir,{recursive:true});
   if(existing[0]?.evidence_path)await unlink(path.join(dir,path.basename(existing[0].evidence_path))).catch(()=>{});
   const filename=`${player}-${mission.id}-${Date.now()}.jpg`; await writeFile(path.join(dir,filename),processed,{mode:0o600});
-  await pool.execute(`INSERT INTO hunt_submissions(player_id,mission_id,evidence_path,status,submitted_at,reviewed_at) VALUES(?,?,?,'pending',NOW(),NULL) ON DUPLICATE KEY UPDATE evidence_path=VALUES(evidence_path),status='pending',submitted_at=NOW(),reviewed_at=NULL`,[player,mission.id,filename]);
+  await pool.execute(`INSERT INTO hunt_submissions(player_id,mission_id,evidence_path,status,submitted_at,reviewed_at) VALUES(?,?,?,'pending',NOW(),NULL) ON DUPLICATE KEY UPDATE evidence_path=VALUES(evidence_path),status='pending',rejection_reason=NULL,submitted_at=NOW(),reviewed_at=NULL`,[player,mission.id,filename]);
   return NextResponse.json({ok:true,pending:true});
   }catch(error){
     console.error("photo upload failed",error);
