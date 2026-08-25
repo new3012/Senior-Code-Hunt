@@ -24,7 +24,7 @@ h1 em{color:transparent;-webkit-text-stroke:1px var(--acid);font-style:normal}
 .terminal-head{height:47px;border-bottom:1px solid #35392f;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font:11px ui-monospace,monospace;color:#8f9388}
 .terminal-head div{display:flex;gap:6px}
 .terminal-head i{width:8px;height:8px;border-radius:50%;background:#4b4f46}
-.terminal-body{min-height:430px;padding:27px}
+.terminal-body{min-height:430px;padding:27px;position:relative}
 .date{color:#71766b;font:11px ui-monospace,monospace;margin:0 0 24px}
 .code-line{display:grid;grid-template-columns:28px 1fr;font:13px ui-monospace,monospace;line-height:2}
 .code-line span{color:#555a50}
@@ -43,6 +43,7 @@ h1 em{color:transparent;-webkit-text-stroke:1px var(--acid);font-style:normal}
 .clue-content blockquote{border-left:2px solid var(--acid);margin:20px 0;padding:5px 0 5px 18px;color:#d4d6cf;font-size:18px;line-height:1.7}
 .clue-code{display:inline-block;color:#10120f;background:var(--acid);padding:6px 9px}
 .warning{color:#777c72;font-size:11px;margin-top:23px}
+.clue-reveal{position:absolute;z-index:5;inset:0;background:#171a16;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;animation:reveal .35s ease}.reveal-check{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--acid);color:#10120f;font-size:28px;margin:14px 0}.clue-reveal h2{font-size:28px;margin:5px 0}.clue-reveal blockquote{max-width:440px;margin:16px 0 22px;border:1px solid #4b533e;background:#c7ff430b;padding:18px;color:#e5e8df;font-size:18px;line-height:1.7}.clue-reveal button{background:var(--acid);border:0;color:#10120f;padding:13px 18px;font-weight:bold;cursor:pointer;box-shadow:5px 5px 0 #566d20}
 .challenge-label{color:var(--acid)!important;font:10px ui-monospace,monospace!important;letter-spacing:.14em}
 .challenge-code{margin:13px 0;background:#0d0f0c;border:1px solid #34382f;text-align:left;color:#cbd0c5;padding:13px 15px;font:12px/1.7 ui-monospace,monospace;white-space:pre-wrap}
 .answer-input{width:100%;margin-top:10px;border:1px solid #4a4f43;background:#0d0f0c;color:var(--paper);padding:12px 14px;outline:none;font:13px ui-monospace,monospace}

@@ -1,34 +1,49 @@
 @echo off
-chcp 65001 >nul
 setlocal
+cd /d "%~dp0"
 
 echo ========================================
-echo   Senior Code Hunt - GitHub Deploy
+echo   Senior Code Hunt - Auto Deploy
 echo ========================================
 
-git status
-git add .
-set /p commit_message=ข้อความอัปเดต: 
-if "%commit_message%"=="" set commit_message=Update Senior Code Hunt
-git commit -m "%commit_message%"
+where git >nul 2>nul
 if errorlevel 1 (
-  echo ไม่มีไฟล์ใหม่ให้ Commit หรือเกิดข้อผิดพลาด
+  echo ERROR: Git was not found.
   pause
   exit /b 1
 )
+
+git status --short
+git add -A
+git diff --cached --quiet
+if errorlevel 1 (
+  git commit -m "Update Senior Code Hunt"
+  if errorlevel 1 (
+    echo ERROR: Git commit failed.
+    pause
+    exit /b 1
+  )
+) else (
+  echo No local changes. Continuing with deploy...
+)
+
 git push origin main
 if errorlevel 1 (
-  echo Push ไม่สำเร็จ กรุณาตรวจสอบ GitHub
+  echo ERROR: GitHub push failed.
   pause
   exit /b 1
 )
 
-echo อัปโหลดขึ้น GitHub สำเร็จ กำลังอัปเดต VPS...
-ssh discordbot@194.163.174.4 "cd /home/discordbot/projects/senior-code-hunt && git pull --ff-only origin main && npm ci && npm run build && pm2 restart senior-code-hunt && pm2 save"
+echo Updating VPS...
+ssh discordbot@194.163.174.4 "cd /home/discordbot/projects/senior-code-hunt && git restore next-env.d.ts && git pull --ff-only origin main && npm ci && npm run build && pm2 restart senior-code-hunt && pm2 save"
 if errorlevel 1 (
-  echo อัปเดต VPS ไม่สำเร็จ เว็บไซต์เดิมยังทำงานอยู่ กรุณาอ่าน DEPLOY_GUIDE.md
+  echo ERROR: VPS deploy failed. The previous website may still be running.
   pause
   exit /b 1
 )
-echo Deploy สำเร็จ: https://seniorhunt.nexspacehub.com
+
+echo ========================================
+echo Deploy completed successfully.
+echo https://seniorhunt.nexspacehub.com
+echo ========================================
 pause

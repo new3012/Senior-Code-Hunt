@@ -27,6 +27,8 @@ MISSION_START_DATE=2026-08-25
 ```
 ห้าม Push ไฟล์นี้ขึ้น GitHub เปลี่ยนวันเริ่มภายหลังได้จาก `/admin`
 
+ค่า Bcrypt มีเครื่องหมาย `$` สามตัว ให้เติม `\` ข้างหน้าทุกตัวในไฟล์จริง เช่น `ADMIN_PASSWORD_HASH=\$2b\$12\$...` เพื่อให้ Next.js โหลด Hash ครบ
+
 ## 4. Build และ Restart
 ```bash
 npm run build
