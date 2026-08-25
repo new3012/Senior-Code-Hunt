@@ -5,7 +5,7 @@ import { cookieOptions, makeToken } from "@/lib/session";
 
 const attempts=new Map<string,{count:number;until:number}>();
 export async function POST(request:Request){
-  if(!process.env.SESSION_SECRET)return NextResponse.json({error:"ผู้ดูแลยังไม่ได้ตั้งค่า SESSION_SECRET"},{status:503});
+  if(!process.env.SESSION_SECRET)return NextResponse.json({error:"พี่รหัสยังไม่ได้ตั้งค่า SESSION_SECRET"},{status:503});
   const ip=request.headers.get("x-forwarded-for")?.split(",")[0]??"unknown", now=Date.now(), item=attempts.get(ip);
   if(item&&item.count>=5&&item.until>now)return NextResponse.json({error:"ลองใหม่อีกครั้งใน 15 นาที"},{status:429});
   const {password}=await request.json(); const hash=process.env.ADMIN_PASSWORD_HASH;
