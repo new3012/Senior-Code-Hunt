@@ -22,8 +22,6 @@ DB_PASSWORD=รหัสฐานข้อมูลจากข้อ 1
 DB_NAME=senior_hunt
 SESSION_SECRET=ข้อความสุ่มยาวอย่างน้อย-32-ตัวอักษร
 ADMIN_PASSWORD_HASH=ค่า-hash-จากข้อ-2
-OPENAI_API_KEY=คีย์-OpenAI
-OPENAI_VISION_MODEL=gpt-4o-mini
 PRIVATE_UPLOAD_DIR=/home/discordbot/private/senior-code-hunt
 MISSION_START_DATE=2026-08-25
 ```
@@ -39,4 +37,4 @@ pm2 save
 - เว็บผู้เล่น: `https://seniorhunt.nexspacehub.com`
 - หลังบ้าน: `https://seniorhunt.nexspacehub.com/admin`
 - รูปไม่ผ่านจะไม่ถูกเก็บ รูปผ่านเก็บ private และลบเมื่อเกิน 7 วันในครั้งถัดไปที่เปิดหลังบ้าน
-- AI ตรวจองค์ประกอบตามโจทย์เท่านั้น ไม่ระบุตัวตนหรือจดจำใบหน้า
+- รูปจะรอให้นิวตรวจในหน้า `/admin` เมื่อกดผ่านจึงปลดล็อกคำใบ้

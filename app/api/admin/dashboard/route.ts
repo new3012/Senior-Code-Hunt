@@ -8,7 +8,8 @@ export async function GET(){if(!(await isAdmin()))return NextResponse.json({erro
   const [players]=await pool.query<RowDataPacket[]>(`SELECT p.id,p.nickname,p.recovery_code recoveryCode,p.created_at createdAt,p.last_seen_at lastSeenAt,COUNT(c.id) completed FROM hunt_players p LEFT JOIN hunt_completions c ON c.player_id=p.id GROUP BY p.id ORDER BY p.created_at`);
   const [missions]=await pool.query<RowDataPacket[]>("SELECT id,day_number day,kind,tag,title,task,snippet,answer,help_text help,clue,photo_prompt photoPrompt,choices_json choices FROM hunt_missions ORDER BY day_number");
   const [completions]=await pool.query<RowDataPacket[]>(`SELECT c.id,c.player_id playerId,p.nickname,m.day_number day,m.title,c.method,c.ai_result aiResult,c.evidence_path evidencePath,c.passed_at passedAt FROM hunt_completions c JOIN hunt_players p ON p.id=c.player_id JOIN hunt_missions m ON m.id=c.mission_id ORDER BY c.passed_at DESC`);
-  return NextResponse.json({players,missions,completions,startDate:(await settings()).startDate});}
+  const [submissions]=await pool.query<RowDataPacket[]>(`SELECT s.id,s.player_id playerId,s.mission_id missionId,p.nickname,m.day_number day,m.title,s.evidence_path evidencePath,s.submitted_at submittedAt FROM hunt_submissions s JOIN hunt_players p ON p.id=s.player_id JOIN hunt_missions m ON m.id=s.mission_id WHERE s.status='pending' ORDER BY s.submitted_at`);
+  return NextResponse.json({players,missions,completions,submissions,startDate:(await settings()).startDate});}
 
 export async function PATCH(request:Request){if(!(await isAdmin()))return NextResponse.json({error:"unauthorized"},{status:401});await ensureDb();const body=await request.json();
   if(body.startDate){await pool.execute("UPDATE hunt_settings SET start_date=? WHERE id=1",[body.startDate]);return NextResponse.json({ok:true});}
