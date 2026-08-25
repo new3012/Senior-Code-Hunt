@@ -29,7 +29,10 @@ export async function ensureDb() {
   if (!global.seniorHuntReady) global.seniorHuntReady = (async () => {
     const c = await pool.getConnection();
     try {
-      await c.query(`CREATE TABLE IF NOT EXISTS hunt_settings (id TINYINT PRIMARY KEY DEFAULT 1, start_date DATE NOT NULL, content_version INT NOT NULL DEFAULT 1, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)`);
+      await c.query(`CREATE TABLE IF NOT EXISTS hunt_settings (id TINYINT PRIMARY KEY DEFAULT 1, start_date DATE NOT NULL, content_version INT NOT NULL DEFAULT 1, bonus_clue TEXT NULL, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)`);
+      const [bonusClueColumns]=await c.query<RowDataPacket[]>("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='hunt_settings' AND COLUMN_NAME='bonus_clue'");
+      if(!bonusClueColumns.length)await c.query("ALTER TABLE hunt_settings ADD COLUMN bonus_clue TEXT NULL AFTER content_version");
+      await c.execute("UPDATE hunt_settings SET bonus_clue=? WHERE id=1 AND (bonus_clue IS NULL OR TRIM(bonus_clue)='')",["พี่รหัสมักอยู่ใกล้พื้นที่ที่มีคอมพิวเตอร์"]);
       await c.query(`CREATE TABLE IF NOT EXISTS hunt_missions (id INT AUTO_INCREMENT PRIMARY KEY, day_number INT NOT NULL UNIQUE, unlock_offset INT NOT NULL DEFAULT 0, kind ENUM('code','choice','photo') NOT NULL, tag VARCHAR(32) NOT NULL, title VARCHAR(160) NOT NULL, task TEXT NOT NULL, snippet TEXT NULL, answer VARCHAR(160) NULL, help_text TEXT NULL, clue TEXT NOT NULL, photo_prompt TEXT NULL, choices_json JSON NULL, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)`);
       await c.query(`CREATE TABLE IF NOT EXISTS hunt_players (id CHAR(36) PRIMARY KEY, nickname VARCHAR(40) NOT NULL, recovery_code VARCHAR(20) NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
       await c.query(`CREATE TABLE IF NOT EXISTS hunt_completions (id BIGINT AUTO_INCREMENT PRIMARY KEY, player_id CHAR(36) NOT NULL, mission_id INT NOT NULL, method ENUM('answer','manual_photo','ai_photo') NOT NULL, evidence_path VARCHAR(500) NULL, ai_result JSON NULL, passed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE KEY uniq_player_mission(player_id,mission_id), CONSTRAINT fk_completion_player FOREIGN KEY(player_id) REFERENCES hunt_players(id) ON DELETE CASCADE, CONSTRAINT fk_completion_mission FOREIGN KEY(mission_id) REFERENCES hunt_missions(id) ON DELETE CASCADE)`);
@@ -69,6 +72,16 @@ export async function ensureDb() {
         await c.execute(`UPDATE hunt_missions SET kind='photo',tag='TEAM',title=?,task=?,snippet=NULL,answer=NULL,help_text=?,clue=?,photo_prompt=?,choices_json=? WHERE day_number=9`,["ทีมสืบสวนสามคน","ขออนุญาตเพื่อนแล้วถ่ายรูปรวม 3 คน พร้อมชูเลข 1, 2 และ 3 คนละหนึ่งเลข","ต้องเห็นทั้งสามคนและเลข 1, 2, 3 ชัดเจนในภาพเดียว","พี่เรียนสายคอมพิวเตอร์","Manual review: three consenting people together, clearly showing the numbers 1, 2, and 3.",JSON.stringify([])]);
         await c.query("UPDATE hunt_settings SET content_version=6 WHERE id=1");
       }
+      const [day6Versions]=await c.query<RowDataPacket[]>("SELECT content_version FROM hunt_settings WHERE id=1");
+      if(Number(day6Versions[0]?.content_version??1)<7){
+        await c.execute(`UPDATE hunt_missions SET task=?,help_text=?,photo_prompt=? WHERE day_number=6`,[
+          "ขออนุญาตอาจารย์ก่อน แล้วถ่ายรูปด้วยกัน พร้อมให้เห็นข้อความ “ภารกิจที่ 6” บนกระดาษหรือ iPad ก็ได้",
+          "ต้องเห็นน้อง อาจารย์ และข้อความ “ภารกิจที่ 6” ชัดเจน จะเขียนบนกระดาษหรือเปิดบน iPad ก็ได้",
+          "Manual review: student and teacher together with a clearly visible Mission 6 message shown on paper or an iPad."
+        ]);
+        await c.query("UPDATE hunt_settings SET content_version=7 WHERE id=1");
+      }
+
     } finally { c.release(); }
   })();
   return global.seniorHuntReady;
@@ -76,6 +89,6 @@ export async function ensureDb() {
 
 export async function settings() {
   await ensureDb();
-  const [rows] = await pool.query<RowDataPacket[]>("SELECT DATE_FORMAT(start_date,'%Y-%m-%d') startDate FROM hunt_settings WHERE id=1");
-  return rows[0] as { startDate: string };
+  const [rows] = await pool.query<RowDataPacket[]>("SELECT DATE_FORMAT(start_date,'%Y-%m-%d') startDate,bonus_clue bonusClue FROM hunt_settings WHERE id=1");
+  return rows[0] as { startDate: string; bonusClue: string };
 }

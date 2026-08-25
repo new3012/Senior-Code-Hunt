@@ -10,10 +10,11 @@ export async function GET(){if(!(await isAdmin()))return NextResponse.json({erro
   const [completions]=await pool.query<RowDataPacket[]>(`SELECT c.id,c.player_id playerId,p.nickname,m.day_number day,m.title,c.method,c.ai_result aiResult,c.evidence_path evidencePath,c.passed_at passedAt FROM hunt_completions c JOIN hunt_players p ON p.id=c.player_id JOIN hunt_missions m ON m.id=c.mission_id ORDER BY c.passed_at DESC`);
   const [submissions]=await pool.query<RowDataPacket[]>(`SELECT s.id,s.player_id playerId,s.mission_id missionId,p.nickname,m.day_number day,m.title,s.evidence_path evidencePath,s.submitted_at submittedAt FROM hunt_submissions s JOIN hunt_players p ON p.id=s.player_id JOIN hunt_missions m ON m.id=s.mission_id WHERE s.status='pending' ORDER BY s.submitted_at`);
   const [reviews]=await pool.query<RowDataPacket[]>(`SELECT h.id,p.nickname,m.day_number day,m.title,h.action,h.reason,h.reviewed_at reviewedAt FROM hunt_review_history h JOIN hunt_players p ON p.id=h.player_id JOIN hunt_missions m ON m.id=h.mission_id ORDER BY h.reviewed_at DESC LIMIT 100`);
-  return NextResponse.json({players,missions,completions,submissions,reviews,startDate:(await settings()).startDate});}
+  const appSettings=await settings(); return NextResponse.json({players,missions,completions,submissions,reviews,startDate:appSettings.startDate,bonusClue:appSettings.bonusClue});}
 
 export async function PATCH(request:Request){if(!(await isAdmin()))return NextResponse.json({error:"unauthorized"},{status:401});await ensureDb();const body=await request.json();
   if(body.startDate){await pool.execute("UPDATE hunt_settings SET start_date=? WHERE id=1",[body.startDate]);return NextResponse.json({ok:true});}
+  if(typeof body.bonusClue==="string"){const clue=body.bonusClue.trim();if(!clue||clue.length>1000)return NextResponse.json({error:"คำใบ้พิเศษต้องมี 1-1000 ตัวอักษร"},{status:400});await pool.execute("UPDATE hunt_settings SET bonus_clue=? WHERE id=1",[clue]);return NextResponse.json({ok:true});}
   const allowed=["title","task","snippet","answer","help_text","clue","photo_prompt","choices_json"] as const; const key=allowed.includes(body.field)?body.field:null;
   if(!key)return NextResponse.json({error:"invalid field"},{status:400}); const value=key==="choices_json"?JSON.stringify(body.value):body.value;
   await pool.execute(`UPDATE hunt_missions SET ${key}=? WHERE id=?`,[value,Number(body.id)]);return NextResponse.json({ok:true});}
