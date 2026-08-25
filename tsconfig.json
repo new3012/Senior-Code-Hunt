@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "vite.config.ts", "scripts/sites-env.sh", "scripts/build-verified.sh", "scripts/install-ci.sh"]
 }

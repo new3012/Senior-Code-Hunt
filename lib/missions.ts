@@ -1,0 +1,13 @@
+export type MissionKind = "code" | "choice" | "photo";
+
+export const DEFAULT_MISSIONS = [
+  { day: 1, kind: "code", tag: "TRAVEL", title: "เสียงเครื่องยนต์ใกล้ตัว", task: "โค้ดนี้แสดงผลเป็นเลขอะไร?", snippet: "let x = 4;\nx -= 2;\nconsole.log(x);", answer: "2", help: "เริ่มจาก 4 แล้วลบ 2", clue: "พี่เดินทางมามหาวิทยาลัยด้วยมอเตอร์ไซค์", photoPrompt: null },
+  { day: 2, kind: "photo", tag: "LOCATION", title: "จุดพักพลัง", task: "ถ่ายรูปให้เห็นใบหน้า พร้อมอาหารหรือเครื่องดื่ม 1 อย่าง และชู 2 นิ้ว", snippet: null, answer: null, help: "ใบหน้า อาหาร/เครื่องดื่ม และสองนิ้วต้องเห็นชัดในภาพเดียว", clue: "ถ้าหาพี่ไม่เจอ ลองมองแถวโรงอาหาร", photoPrompt: "A real person face is visible, food or a drink is visible, and the person is holding up exactly two fingers." },
+  { day: 3, kind: "code", tag: "DEVICE", title: "เลขที่อยู่ใกล้มือ", task: "โค้ดนี้แสดงผลเป็นอะไร?", snippet: "console.log([1, 5].join(\"\"));", answer: "15", help: "join ต่อสมาชิกเข้าด้วยกัน ไม่ได้บวกเลข", clue: "โทรศัพท์ของพี่คือ iPhone 15 สีดำ", photoPrompt: null },
+  { day: 4, kind: "code", tag: "MAJOR", title: "สองตัวอักษร", task: "โค้ดนี้แสดงผลเป็นอะไร?", snippet: "String.fromCharCode(67, 69)", answer: "CE", help: "67 และ 69 คือรหัสตัวอักษรภาษาอังกฤษ", clue: "พี่เรียนสาขา Computer Engineering (CE)", photoPrompt: null },
+  { day: 5, kind: "photo", tag: "MUSIC", title: "เสียงที่ไม่มีสาย", task: "ถ่ายรูปให้เห็นใบหน้า ทำท่าเล่นกีตาร์หรือถือกีตาร์ และชูนิ้วโป้ง", snippet: null, answer: null, help: "ไม่จำเป็นต้องมีกีตาร์จริง ใช้ท่า Air Guitar ได้", clue: "เครื่องดนตรีที่พี่ชอบเล่นคือกีตาร์", photoPrompt: "A real person face is visible, the person is holding a guitar or clearly doing an air-guitar pose, and a thumbs-up gesture is visible." },
+  { day: 6, kind: "code", tag: "ARTIST", title: "ชื่อที่สลับด้าน", task: "จัด FU.DT ให้กลับเป็นชื่อที่ถูกต้อง", snippet: "reverse(\"FU.DT\")", answer: "DT.FU", help: "สลับส่วนหน้าและส่วนหลังรอบจุด", clue: "ศิลปินหรือวงที่พี่สนใจคือ DT.FU", photoPrompt: null },
+  { day: 7, kind: "code", tag: "BIRTH", title: "ปลายปี", task: "หนึ่งปีมีกี่เดือน?", snippet: "const monthsInYear = ?", answer: "12", help: "นับตั้งแต่มกราคมถึงธันวาคม", clue: "พี่เกิดเดือน 12", photoPrompt: null },
+  { day: 8, kind: "choice", tag: "MEANING", title: "ตรงข้ามของเก่า", task: "คำตรงข้ามของ OLD คือข้อใด?", snippet: null, answer: "NEW", help: "สิ่งที่เพิ่งเกิดขึ้นและยังไม่เก่า", clue: "ความหมายของชื่อเล่นพี่คือ ‘ใหม่’", photoPrompt: null, choices: ["GOLD", "NEW", "COLD"] },
+  { day: 9, kind: "choice", tag: "INITIAL", title: "อักษรแรก", task: "ชื่อเล่นพี่ขึ้นต้นด้วยตัวใด?", snippet: null, answer: "น", help: "ตัวอักษรอยู่ระหว่าง ม และ ว ในตัวเลือก", clue: "ชื่อเล่นพี่ขึ้นต้นด้วย ‘น’", photoPrompt: null, choices: ["ม", "น", "ว"] },
+] as const;

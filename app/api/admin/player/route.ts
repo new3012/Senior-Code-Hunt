@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server"; import { ensureDb,pool } from "@/lib/db"; import { isAdmin } from "@/lib/session";
+export async function DELETE(request:Request){if(!(await isAdmin()))return NextResponse.json({error:"unauthorized"},{status:401});await ensureDb();const {playerId,reset}=await request.json();if(reset)await pool.execute("DELETE FROM hunt_completions WHERE player_id=?",[playerId]);else await pool.execute("DELETE FROM hunt_players WHERE id=?",[playerId]);return NextResponse.json({ok:true});}

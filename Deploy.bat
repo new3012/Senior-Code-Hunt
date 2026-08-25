@@ -23,7 +23,12 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo อัปโหลดขึ้น GitHub สำเร็จ
-echo จากนั้นเข้า VPS และรันคำสั่งใน DEPLOY_GUIDE.md
+echo อัปโหลดขึ้น GitHub สำเร็จ กำลังอัปเดต VPS...
+ssh discordbot@194.163.174.4 "cd /home/discordbot/projects/senior-code-hunt && git pull --ff-only origin main && npm ci && npm run build && pm2 restart senior-code-hunt && pm2 save"
+if errorlevel 1 (
+  echo อัปเดต VPS ไม่สำเร็จ เว็บไซต์เดิมยังทำงานอยู่ กรุณาอ่าน DEPLOY_GUIDE.md
+  pause
+  exit /b 1
+)
+echo Deploy สำเร็จ: https://seniorhunt.nexspacehub.com
 pause
-
