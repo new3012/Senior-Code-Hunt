@@ -774,3 +774,163 @@ button.photo-source-btn{width:100%;padding:0}
 .delete-user-button{color:#ff8e80!important;border-color:#70413b!important;background:#170e0d!important}
 .delete-user-button:hover{border-color:#ff7868!important;color:#ffaea4!important}
 @media(max-width:600px){.user-management-grid article.user-management-card{min-width:260px}.user-card-actions{grid-template-columns:1fr}}
+
+
+/* ===== Admin visual polish: user cards + centered special preview ===== */
+
+/* Desktop: show users as a clean dashboard grid instead of cramped horizontal cards */
+.players-section{
+  overflow:visible;
+}
+.players-section .section-heading-row{
+  align-items:flex-end;
+  margin-bottom:18px;
+}
+.players-section .admin-player-scroll{
+  overflow:visible;
+  padding:0;
+}
+.players-section .user-management-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  width:100%;
+  min-width:0;
+}
+.players-section .user-management-card{
+  min-width:0!important;
+  width:100%;
+  min-height:250px;
+  padding:18px!important;
+  border:1px solid #3f4938!important;
+  background:
+    radial-gradient(circle at 15% 0%,#c7ff4308,transparent 38%),
+    #11140f!important;
+  box-shadow:0 10px 28px #0005;
+}
+.players-section .player-index{
+  opacity:.45;
+}
+.players-section .user-card-head strong{
+  font-size:20px;
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
+.players-section .user-card-head>div>span{
+  margin-top:2px;
+}
+.players-section .user-recovery{
+  padding:13px;
+  border-color:#46513e;
+}
+.players-section .user-recovery code{
+  font-size:14px;
+  font-weight:800;
+  text-overflow:clip;
+  overflow:visible;
+}
+.players-section .user-card-actions{
+  gap:10px;
+}
+.players-section .user-card-actions button{
+  min-height:44px;
+  padding:9px 10px!important;
+  white-space:normal;
+  line-height:1.35;
+}
+.players-section .player-scroll-controls{
+  display:none;
+}
+
+/* Make special mission preview actually center inside the modal on desktop */
+.mission-preview-modal{
+  align-items:center;
+  justify-items:center;
+}
+.special-preview-shell{
+  width:min(900px,94vw)!important;
+  margin:auto!important;
+}
+.special-preview-shell .special-mission-wrap{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  padding:26px!important;
+  box-sizing:border-box;
+}
+.special-preview-shell .special-mission-heading{
+  justify-content:center!important;
+  text-align:center;
+}
+.special-preview-shell .special-mission-heading>div{
+  width:100%;
+  text-align:center;
+}
+.special-preview-shell .mini-game{
+  width:min(680px,100%)!important;
+  max-width:680px!important;
+  margin:0 auto!important;
+  padding:24px!important;
+  box-sizing:border-box;
+}
+.special-preview-shell .mini-head{
+  width:100%;
+}
+.special-preview-shell .mini-game>div:not(.mini-head):not(.admin-skip-wrap){
+  width:100%;
+  max-width:560px;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+}
+.special-preview-shell .simon-grid{
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.special-preview-shell .admin-skip-wrap{
+  max-width:560px;
+}
+
+/* iPad/tablet */
+@media (max-width:1000px){
+  .players-section .user-management-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .special-preview-shell{
+    width:min(820px,96vw)!important;
+  }
+}
+
+/* Phone */
+@media (max-width:650px){
+  .players-section .user-management-grid{
+    grid-template-columns:1fr;
+  }
+  .players-section .user-management-card{
+    min-width:0!important;
+    min-height:auto;
+  }
+  .players-section .user-card-actions{
+    grid-template-columns:1fr 1fr;
+  }
+  .special-preview-shell{
+    width:100%!important;
+    min-height:100dvh;
+    max-height:100dvh!important;
+    margin:0!important;
+    border:0!important;
+    box-shadow:none!important;
+  }
+  .special-preview-shell .special-mission-wrap{
+    padding:14px!important;
+  }
+  .special-preview-shell .mini-game{
+    padding:14px!important;
+  }
+}
+
+@media (max-width:390px){
+  .players-section .user-card-actions{
+    grid-template-columns:1fr;
+  }
+}
