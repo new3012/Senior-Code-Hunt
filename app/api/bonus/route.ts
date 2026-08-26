@@ -7,8 +7,14 @@ import {cookieOptions,makeToken,playerId,readToken} from "@/lib/session";
 import {sundayBonusStatus} from "@/lib/time";
 
 const BONUS_COOKIE="hunt_bonus_code";
-function makeSecret(){const poolDigits=[0,1,2,3,4,5,6,7,8,9],out:string[]=[];while(out.length<4){const i=randomInt(poolDigits.length);out.push(String(poolDigits.splice(i,1)[0]))}return out.join("")}
-function feedback(guess:string,secret:string){return guess.split("").map((d,i)=>secret[i]===d?"exact":secret.includes(d)?"near":"miss")}
+function makeSecret(){return Array.from({length:4},()=>String(randomInt(10))).join("")}
+function feedback(guess:string,secret:string){
+ const result:("exact"|"near"|"miss")[]=Array(4).fill("miss");
+ const remaining=new Map<string,number>();
+ for(let i=0;i<4;i++){if(guess[i]===secret[i])result[i]="exact";else remaining.set(secret[i],(remaining.get(secret[i])??0)+1)}
+ for(let i=0;i<4;i++){if(result[i]==="exact")continue;const count=remaining.get(guess[i])??0;if(count>0){result[i]="near";remaining.set(guess[i],count-1)}}
+ return result;
+}
 async function requireBonusPlayer(){
  const id=await playerId();
  if(!id)return {error:NextResponse.json({error:"กรุณาเริ่มภารกิจก่อน"},{status:401})};
@@ -35,7 +41,7 @@ export async function POST(request:Request){
   return NextResponse.json({ok:true});
  }
  if(body.action==="guess-code"){
-  if(!/^\d{4}$/.test(body.guess)||new Set(String(body.guess)).size!==4)return NextResponse.json({error:"กรอกรหัส 4 หลักที่ไม่ซ้ำกัน"},{status:400});
+  if(!/^\d{4}$/.test(String(body.guess)))return NextResponse.json({error:"กรอกรหัสตัวเลข 4 หลัก"},{status:400});
   const [rows]=await pool.execute<RowDataPacket[]>("SELECT sequence_done,code_done FROM hunt_bonus_progress WHERE player_id=?",[id]);
   if(!rows[0]?.sequence_done)return NextResponse.json({error:"ต้องผ่านเกมจำลำดับไฟก่อน"},{status:409});
   if(rows[0]?.code_done)return NextResponse.json({ok:true,complete:true,feedback:["exact","exact","exact","exact"],remaining:0});

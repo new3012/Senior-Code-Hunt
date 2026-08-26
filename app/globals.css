@@ -1009,3 +1009,88 @@ button.photo-source-btn{width:100%;padding:0}
     text-align:center!important;
   }
 }
+
+
+/* ===== Four-box code input ===== */
+.code-guess-boxed{
+  display:flex!important;
+  align-items:center;
+  justify-content:center!important;
+  gap:14px!important;
+  width:100%;
+  margin:22px auto!important;
+}
+.code-digit-inputs{
+  display:grid;
+  grid-template-columns:repeat(4,58px);
+  gap:9px;
+}
+.code-digit-inputs input{
+  width:58px!important;
+  height:58px!important;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid #65705e!important;
+  border-radius:4px;
+  background:#0b0e0a!important;
+  color:#f4f6f0!important;
+  text-align:center;
+  font:800 24px/1 ui-monospace,monospace!important;
+  letter-spacing:0!important;
+  outline:none;
+  box-shadow:inset 0 0 0 1px #ffffff08;
+  appearance:textfield;
+}
+.code-digit-inputs input:focus{
+  border-color:var(--acid)!important;
+  box-shadow:0 0 0 2px #c7ff4326,inset 0 0 0 1px #c7ff4318;
+}
+.code-digit-inputs input::-webkit-outer-spin-button,
+.code-digit-inputs input::-webkit-inner-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+.code-guess-boxed>button{
+  min-height:58px!important;
+  padding:0 20px!important;
+  margin:0!important;
+}
+.code-guess-boxed>button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.guess-digits{
+  display:grid!important;
+  grid-template-columns:repeat(4,42px);
+  gap:7px;
+  justify-content:center;
+}
+.guess-digit{
+  width:42px!important;
+  height:42px!important;
+  display:grid!important;
+  place-items:center;
+  margin:0!important;
+  font-weight:800!important;
+}
+
+@media(max-width:600px){
+  .code-guess-boxed{
+    flex-direction:column;
+    gap:12px!important;
+  }
+  .code-digit-inputs{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    width:min(100%,300px);
+    gap:7px;
+  }
+  .code-digit-inputs input{
+    width:100%!important;
+    height:54px!important;
+    font-size:22px!important;
+  }
+  .code-guess-boxed>button{
+    width:min(100%,300px)!important;
+    min-height:50px!important;
+  }
+}
