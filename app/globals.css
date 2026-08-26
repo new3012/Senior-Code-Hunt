@@ -934,3 +934,78 @@ button.photo-source-btn{width:100%;padding:0}
     grid-template-columns:1fr;
   }
 }
+
+
+/* ===== Hard center fix for desktop special mission preview ===== */
+@media (min-width: 701px){
+  .mission-preview-modal{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:24px!important;
+  }
+
+  .mission-preview-modal .special-preview-shell{
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    transform:none!important;
+    margin:auto!important;
+    width:min(900px,calc(100vw - 48px))!important;
+  }
+
+  .special-preview-shell .special-mission-wrap{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    width:100%!important;
+    margin:0!important;
+  }
+
+  .special-preview-shell .special-mission-heading{
+    width:100%!important;
+    justify-content:center!important;
+  }
+
+  .special-preview-shell .mini-game{
+    width:min(680px,100%)!important;
+    margin:0 auto!important;
+  }
+
+  .special-preview-shell .mini-game > div:not(.mini-head):not(.admin-skip-wrap){
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    width:100%!important;
+    max-width:560px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+
+  .special-preview-shell .mini-step,
+  .special-preview-shell .mini-game p{
+    text-align:center!important;
+  }
+
+  .special-preview-shell .simon-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,1fr)!important;
+    width:270px!important;
+    max-width:100%!important;
+    margin:24px auto!important;
+    justify-content:center!important;
+  }
+
+  .special-preview-shell .mini-primary{
+    margin:18px auto 0!important;
+  }
+
+  .special-preview-shell .admin-skip-wrap{
+    width:100%!important;
+    max-width:560px!important;
+    margin:28px auto 0!important;
+    align-items:center!important;
+    text-align:center!important;
+  }
+}
