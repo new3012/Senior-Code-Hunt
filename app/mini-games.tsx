@@ -13,11 +13,11 @@ export default function MiniGames({testMode=false,initialSequenceDone=false,init
  const createSecret=()=>Array.from({length:4},()=>String(Math.floor(Math.random()*10))).join("");
  const setGuessDigit=(index:number,value:string)=>{
   const digit=value.replace(/\D/g,"").slice(-1);
-  const chars=guess.padEnd(4," ").split("");
-  chars[index]=digit||" ";
-  const next=chars.join("").trimEnd();
-  setGuess(next);
-  if(digit&&index<3)window.setTimeout(()=>digitRefs.current[index+1]?.focus(),0);
+  if(!digit)return;
+  const chars=Array.from({length:4},(_,i)=>guess[i]??"");
+  chars[index]=digit;
+  setGuess(chars.join(""));
+  if(index<3)window.setTimeout(()=>digitRefs.current[index+1]?.focus(),0);
  };
  const handleDigitKey=(index:number,e:React.KeyboardEvent<HTMLInputElement>)=>{
   if(e.key==="Enter"){void checkCode();return}
@@ -73,6 +73,7 @@ export default function MiniGames({testMode=false,initialSequenceDone=false,init
   if(!/^\d{4}$/.test(guess)){setMessage("กรอกรหัสตัวเลข 4 หลัก");return}
   const submitted=guess;
   setGuess("");
+  window.setTimeout(()=>digitRefs.current[0]?.focus(),0);
   if(testMode){
    const feedback=localFeedback(submitted,testSecret);
    const next=[...attempts,{guess:submitted,feedback}];
