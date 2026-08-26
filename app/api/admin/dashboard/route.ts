@@ -14,7 +14,7 @@ export async function GET(){if(!(await isAdmin()))return NextResponse.json({erro
   const elapsed=elapsedBangkokDays(appSettings.startDate);
   const editableMissions=missions.map(m=>({...m,editable:Number(m.unlockOffset)>=elapsed}));
   const specialEditable=!sundayBonusStatus(appSettings.startDate,appSettings.bonusUnlockTime).unlocked;
-  return NextResponse.json({players,missions:editableMissions,completions,submissions,reviews,startDate:appSettings.startDate,bonusClue:appSettings.bonusClue,bonusTitle:appSettings.bonusTitle,bonusUnlockTime:appSettings.bonusUnlockTime,bonusSequenceRounds:Number(appSettings.bonusSequenceRounds||8),bonusCodeAttempts:Number(appSettings.bonusCodeAttempts||5),specialEditable,finalTitle:appSettings.finalTitle,finalTask:appSettings.finalTask,finalAnswer:appSettings.finalAnswer,finalHelp:appSettings.finalHelp});}
+  return NextResponse.json({players,missions:editableMissions,completions,submissions,reviews,startDate:appSettings.startDate,bonusClue:appSettings.bonusClue,bonusTitle:appSettings.bonusTitle,bonusUnlockTime:appSettings.bonusUnlockTime,bonusSequenceRounds:Number(appSettings.bonusSequenceRounds||8),bonusCodeAttempts:Number(appSettings.bonusCodeAttempts||5),specialEditable,finalTitle:appSettings.finalTitle,finalTask:appSettings.finalTask,finalAnswer:appSettings.finalAnswer,finalHelp:appSettings.finalHelp,finalChoices:typeof appSettings.finalChoices==="string"?JSON.parse(appSettings.finalChoices):appSettings.finalChoices??[]});}
 
 export async function PATCH(request:Request){
  if(!(await isAdmin()))return NextResponse.json({error:"unauthorized"},{status:401});
@@ -44,11 +44,14 @@ export async function PATCH(request:Request){
  if(body.finalSettings){
   const s=body.finalSettings;
   const title=String(s.title??"").trim(),task=String(s.task??"").trim(),answer=String(s.answer??"").trim(),help=String(s.help??"").trim();
+  const choices=Array.isArray(s.choices)?s.choices.map((v:unknown)=>String(v).trim()).filter(Boolean):[];
   if(!title||title.length>160)return NextResponse.json({error:"ชื่อปัญหาเชาว์ต้องมี 1-160 ตัวอักษร"},{status:400});
   if(!task||task.length>2000)return NextResponse.json({error:"โจทย์ปัญหาเชาว์ต้องมี 1-2000 ตัวอักษร"},{status:400});
   if(!answer||answer.length>160)return NextResponse.json({error:"คำตอบต้องมี 1-160 ตัวอักษร"},{status:400});
   if(!help||help.length>1000)return NextResponse.json({error:"คำใบ้ช่วยต้องมี 1-1000 ตัวอักษร"},{status:400});
-  await pool.execute("UPDATE hunt_settings SET final_title=?,final_task=?,final_answer=?,final_help=? WHERE id=1",[title,task,answer,help]);
+  if(choices.length<2||choices.length>12)return NextResponse.json({error:"Final ต้องมี 2-12 ตัวเลือก"},{status:400});
+  if(!choices.includes(answer))return NextResponse.json({error:"คำตอบต้องตรงกับหนึ่งในตัวเลือก"},{status:400});
+  await pool.execute("UPDATE hunt_settings SET final_title=?,final_task=?,final_answer=?,final_help=?,final_choices_json=? WHERE id=1",[title,task,answer,help,JSON.stringify(choices)]);
   return NextResponse.json({ok:true});
  }
 
